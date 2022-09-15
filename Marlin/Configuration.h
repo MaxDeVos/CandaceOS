@@ -60,7 +60,7 @@
 // @section info
 
 // Author info of this build printed to the host during boot and M115
-#define STRING_CONFIG_H_AUTHOR "(DevPeeps, CR-10 S5 BL)" // Who made the changes.
+#define STRING_CONFIG_H_AUTHOR "(Max DeVos, CR-10 on Creality V2.2.1)" // Who made the changes.
 //#define CUSTOM_VERSION_FILE Version.h // Path from the root directory (no quotes)
 
 /**
@@ -538,7 +538,7 @@
 #define TEMP_SENSOR_5 0
 #define TEMP_SENSOR_6 0
 #define TEMP_SENSOR_7 0
-#define TEMP_SENSOR_BED 5
+#define TEMP_SENSOR_BED 1 // Default for CR10S5 = 5
 #define TEMP_SENSOR_PROBE 0
 #define TEMP_SENSOR_CHAMBER 0
 #define TEMP_SENSOR_COOLER 0
@@ -609,7 +609,7 @@
 // Above this temperature the heater will be switched off.
 // This can protect components from overheating, but NOT from shorts and failures.
 // (Use MINTEMP for thermistor short/failure protection.)
-#define HEATER_0_MAXTEMP 250
+#define HEATER_0_MAXTEMP 250 // Default for CR10S5 = 275
 #define HEATER_1_MAXTEMP 275
 #define HEATER_2_MAXTEMP 275
 #define HEATER_3_MAXTEMP 275
@@ -650,6 +650,7 @@
   //#define PID_PARAMS_PER_HOTEND // Use separate PID parameters for each extruder (useful for mismatched extruders)
                                   // Set/get with G-code: M301 E[extruder number, 0-2]
 
+							  
   #if ENABLED(PID_PARAMS_PER_HOTEND)
     // Specify up to one value per hotend here, according to your setup.
     // If there are fewer values, the last one applies to the remaining hotends.
@@ -657,10 +658,15 @@
     #define DEFAULT_Ki_LIST {   1.08,   1.08 }
     #define DEFAULT_Kd_LIST { 114.00, 114.00 }
   #else
-    // Creality CR-10S S5 Stock MK8 w/BRASS
-    #define  DEFAULT_Kp 20.91
-    #define  DEFAULT_Ki 1.59
-    #define  DEFAULT_Kd 68.97
+    // https://forum.e3d-online.com/threads/pid-tuning.731/
+    #define  DEFAULT_Kp 21.80
+    #define  DEFAULT_Ki 1.46
+    #define  DEFAULT_Kd 81.43
+	
+	// Creality CR-10S S5 Stock MK8 w/BRASS
+    // #define  DEFAULT_Kp 2
+    // #define  DEFAULT_Ki 1.59
+    // #define  DEFAULT_Kd 68.97
   #endif
 #endif
 
@@ -724,7 +730,7 @@
  * heater. If your configuration is significantly different than this and you don't understand
  * the issues involved, don't use bed PID until someone else verifies that your hardware works.
  */
-//#define PIDTEMPBED
+#define PIDTEMPBED
 
 //#define BED_LIMIT_SWITCHING
 
@@ -742,9 +748,14 @@
 
   // 120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
-  #define DEFAULT_bedKp 10.00
-  #define DEFAULT_bedKi .023
-  #define DEFAULT_bedKd 305.4
+//  #define DEFAULT_bedKp 10.00
+//  #define DEFAULT_bedKi .023
+//  #define DEFAULT_bedKd 305.4
+
+  // Stock CR-10 Bed Tuned for 70C
+  #define DEFAULT_bedKp 426.68
+  #define DEFAULT_bedKi 78.92
+  #define DEFAULT_bedKd 576.71
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
@@ -1160,20 +1171,33 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 93 } // Stock Creality
+// #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 93 } // Stock Creality
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 415 } // Creality with Bondtech extruder
+
+// E3D Hemera (https://gist.github.com/LongLiveCHIEF/eea2b91bebe4fa5d107493f76cb002bc)
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 397.5 } 
+
 
 /**
  * Default Max Feed Rate (linear=mm/s, rotational=°/s)
  * Override with M203
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
+// CR-10S5
+// #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
+
+// Completely insane CR-10 config default
+// #define DEFAULT_MAX_FEEDRATE          { 2500, 2500, 100, 25 }
+
+// Recommendation from (https://community.octoprint.org/t/cr-10-axis-speeds/565)
+#define DEFAULT_MAX_FEEDRATE          { 500, 500, 500, 100 }
+
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
   #define MAX_FEEDRATE_EDIT_VALUES    { 600, 600, 10, 50 } // ...or, set your own edit limits
 #endif
+
 
 /**
  * Default Max Acceleration (speed change with time) (linear=mm/(s^2), rotational=°/(s^2))
@@ -1181,12 +1205,17 @@
  * Override with M201
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 300, 300, 100, 5000 }
+//CR-10S5
+// #define DEFAULT_MAX_ACCELERATION      { 300, 300, 100, 5000 }
+
+//CR-10 Default
+#define DEFAULT_MAX_ACCELERATION      { 500, 500, 100, 5000 }
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
   #define MAX_ACCEL_EDIT_VALUES       { 6000, 6000, 200, 20000 } // ...or, set your own edit limits
 #endif
+
 
 /**
  * Default Acceleration (speed change with time) (linear=mm/(s^2), rotational=°/(s^2))
@@ -1196,9 +1225,17 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-#define DEFAULT_ACCELERATION           575  // X, Y, Z ... and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION   575  // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION   1000  // X, Y, Z ... acceleration for travel (non printing) moves
+ 
+// CR10S5 Default
+// #define DEFAULT_ACCELERATION           575  // X, Y, Z ... and E acceleration for printing moves
+// #define DEFAULT_RETRACT_ACCELERATION   575  // E acceleration for retracts
+// #define DEFAULT_TRAVEL_ACCELERATION   1000  // X, Y, Z ... acceleration for travel (non printing) moves
+
+//CR-10 Default
+#define DEFAULT_ACCELERATION           600  // X, Y, Z ... and E acceleration for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  1000  // E acceleration for retracts
+#define DEFAULT_TRAVEL_ACCELERATION    800  // X, Y, Z ... acceleration for travel (non printing) moves
+
 
 /**
  * Default Jerk limits (mm/s)
@@ -1228,7 +1265,9 @@
   #endif
 #endif
 
+
 #define DEFAULT_EJERK    5.0  // May be used by Linear Advance
+
 
 /**
  * Junction Deviation Factor
@@ -1238,10 +1277,12 @@
  *   https://blog.kyneticcnc.com/2018/10/computing-junction-deviation-for-marlin.html
  */
 #if DISABLED(CLASSIC_JERK)
-  #define JUNCTION_DEVIATION_MM 0.02  // (mm) Distance from real junction edge
+  // #define JUNCTION_DEVIATION_MM 0.02  // (mm) Distance from real junction edge - CR10S5 Default
+  #define JUNCTION_DEVIATION_MM 0.067 // CR-10 Default
   #define JD_HANDLE_SMALL_SEGMENTS    // Use curvature estimation instead of just the junction angle
                                       // for small segments (< 1mm) with large junction angles (> 135°).
 #endif
+
 
 /**
  * S-Curve Acceleration
@@ -1480,7 +1521,7 @@
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
-#define PROBING_MARGIN 25
+#define PROBING_MARGIN 10 // CR10S5 Default = 25, CR-10 = 10
 
 // X and Y axis travel speed (mm/min) between probes
 #define XY_PROBE_FEEDRATE (133*60)
@@ -1633,9 +1674,9 @@
 // @section machine
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
-#define INVERT_X_DIR false
-#define INVERT_Y_DIR false
-#define INVERT_Z_DIR true
+#define INVERT_X_DIR true //CR10S5 Default = false, CR-10 = true
+#define INVERT_Y_DIR true //CR10S5 Default = false, CR-10 = true
+#define INVERT_Z_DIR false//CR10S5 Default = true, CR-10 = false
 //#define INVERT_I_DIR false
 //#define INVERT_J_DIR false
 //#define INVERT_K_DIR false
@@ -1646,8 +1687,8 @@
 // @section extruder
 
 // For direct drive extruder v9 set to true, for geared extruder set to false.
-#define INVERT_E0_DIR false // Stock Creality CR-10 5S
-//#define INVERT_E0_DIR true // Creality with Bondtech extruder
+// #define INVERT_E0_DIR false // Stock Creality CR-10 5S
+#define INVERT_E0_DIR true // Creality with Bondtech extruder
 #define INVERT_E1_DIR false
 #define INVERT_E2_DIR false
 #define INVERT_E3_DIR false
@@ -1688,16 +1729,16 @@
 // @section geometry
 
 // The size of the printable area
-#define X_BED_SIZE 500 // Nozzle is at X4 when homed
-#define Y_BED_SIZE 500 // Nozzle is at Y2 when homed
+#define X_BED_SIZE 300 // Nozzle@X4 when homed - CR10S Default=500
+#define Y_BED_SIZE 300 // Nozzle@Y2 when homed - CR10S Default=500
 
 // Travel limits (linear=mm, rotational=°) after homing, corresponding to endstop positions.
 #define X_MIN_POS 0
 #define Y_MIN_POS 0
 #define Z_MIN_POS 0
-#define X_MAX_POS X_BED_SIZE
+#define X_MAX_POS X_BED_SIZE + 20 //CR10S5 Default doesn't include +20
 #define Y_MAX_POS Y_BED_SIZE
-#define Z_MAX_POS 500
+#define Z_MAX_POS 400 //CR10S5 Default = 500
 //#define I_MIN_POS 0
 //#define I_MAX_POS 50
 //#define J_MIN_POS 0
@@ -1765,7 +1806,7 @@
  * RAMPS-based boards use SERVO3_PIN for the first runout sensor.
  * For other boards you may need to define FIL_RUNOUT_PIN, FIL_RUNOUT2_PIN, etc.
  */
-#define FILAMENT_RUNOUT_SENSOR
+// #define FILAMENT_RUNOUT_SENSOR //CR10S5 has this, CR-10 doesn't
 #if ENABLED(FILAMENT_RUNOUT_SENSOR)
   #define FIL_RUNOUT_ENABLED_DEFAULT true // Enable the sensor on startup. Override with M412 followed by M500.
   #define NUM_RUNOUT_SENSORS   1          // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
@@ -1868,8 +1909,8 @@
  */
 //#define AUTO_BED_LEVELING_3POINT
 //#define AUTO_BED_LEVELING_LINEAR
-#define AUTO_BED_LEVELING_BILINEAR
-//#define AUTO_BED_LEVELING_UBL
+// #define AUTO_BED_LEVELING_BILINEAR
+#define AUTO_BED_LEVELING_UBL
 //#define MESH_BED_LEVELING
 
 /**
@@ -1916,7 +1957,7 @@
   // The height can be set with M420 Z<height>
   #define ENABLE_LEVELING_FADE_HEIGHT
   #if ENABLED(ENABLE_LEVELING_FADE_HEIGHT)
-    #define DEFAULT_LEVELING_FADE_HEIGHT 2.0 // (mm) Default fade height.
+    #define DEFAULT_LEVELING_FADE_HEIGHT 5.0 // (mm) Default fade height. CR10S5 Default = 2.0, CR-10 Default = 10.0
   #endif
 
   // For Cartesian machines, instead of dividing moves on mesh boundaries,
@@ -2017,7 +2058,7 @@
 #endif
 
 // Add a menu item to move between bed corners for manual bed adjustment
-//#define LCD_BED_TRAMMING
+// #define LCD_BED_TRAMMING
 
 #if ENABLED(LCD_BED_TRAMMING)
   #define BED_TRAMMING_INSET_LFRB { 30, 30, 30, 30 } // (mm) Left, Front, Right, Back insets
@@ -2233,7 +2274,8 @@
 
 #if ENABLED(NOZZLE_PARK_FEATURE)
   // Specify a park position as { X, Y, Z_raise }
-  #define NOZZLE_PARK_POINT { (X_MIN_POS + 20), (Y_MAX_POS - 20), 20 }
+  // #define NOZZLE_PARK_POINT { (X_MIN_POS + 10), (Y_MAX_POS - 10), 20 } - CR10S5 Default = X_MIN_POS+20,-Y_MAX_POS-20,20
+  #define NOZZLE_PARK_POINT { (X_MIN_POS + 10), (Y_MAX_POS - 10), 20 }
   #define NOZZLE_PARK_MOVE          0   // Park motion: 0 = XY Move, 1 = X Only, 2 = Y Only, 3 = X before Y, 4 = Y before X
   #define NOZZLE_PARK_Z_RAISE_MIN   2   // (mm) Always raise Z by at least this distance
   #define NOZZLE_PARK_XY_FEEDRATE 100   // (mm/s) X and Y axes feedrate (also used for delta Z axis)
@@ -2722,8 +2764,8 @@
 // RepRapDiscount FULL GRAPHIC Smart Controller
 // https://reprap.org/wiki/RepRapDiscount_Full_Graphic_Smart_Controller
 //
+// CR10S5 Default Display - 2 PLUGS (EXT1 & EXT2)
 #define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
-
 //
 // K.3D Full Graphic Smart Controller
 //
@@ -2828,8 +2870,8 @@
 //
 // This is RAMPS-compatible using a single 10-pin connector.
 // (For CR-10 owners who want to replace the Melzi Creality board but retain the display)
-//
-//#define CR10_STOCKDISPLAY
+// - 1 PLUG (EXT3)
+// #define CR10_STOCKDISPLAY
 
 //
 // Ender-2 OEM display, a variant of the MKS_MINI_12864
@@ -3200,7 +3242,7 @@
 // Use software PWM to drive the fan, as for the heaters. This uses a very low frequency
 // which is not as annoying as with the hardware PWM. On the other hand, if this frequency
 // is too low, you should also increment SOFT_PWM_SCALE.
-#define FAN_SOFT_PWM
+// #define FAN_SOFT_PWM
 
 // Incrementing this by 1 will double the software PWM frequency,
 // affecting heaters, and the fan if FAN_SOFT_PWM is enabled.
