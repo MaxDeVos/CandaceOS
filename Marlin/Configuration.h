@@ -1674,9 +1674,9 @@
 // @section machine
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
-#define INVERT_X_DIR true //CR10S5 Default = false, CR-10 = true
-#define INVERT_Y_DIR true //CR10S5 Default = false, CR-10 = true
-#define INVERT_Z_DIR false//CR10S5 Default = true, CR-10 = false
+#define INVERT_X_DIR false //CR10S5 Default = false, CR-10 = true
+#define INVERT_Y_DIR false //CR10S5 Default = false, CR-10 = true
+#define INVERT_Z_DIR true //CR10S5 Default = true, CR-10 = false
 //#define INVERT_I_DIR false
 //#define INVERT_J_DIR false
 //#define INVERT_K_DIR false
@@ -3242,7 +3242,7 @@
 // Use software PWM to drive the fan, as for the heaters. This uses a very low frequency
 // which is not as annoying as with the hardware PWM. On the other hand, if this frequency
 // is too low, you should also increment SOFT_PWM_SCALE.
-// #define FAN_SOFT_PWM
+#define FAN_SOFT_PWM
 
 // Incrementing this by 1 will double the software PWM frequency,
 // affecting heaters, and the fan if FAN_SOFT_PWM is enabled.
