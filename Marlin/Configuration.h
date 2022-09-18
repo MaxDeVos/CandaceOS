@@ -1517,7 +1517,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { 10, 10, 0 }
+#define NOZZLE_TO_PROBE_OFFSET { -25, -5, -3.32 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1688,7 +1688,7 @@
 
 // For direct drive extruder v9 set to true, for geared extruder set to false.
 // #define INVERT_E0_DIR false // Stock Creality CR-10 5S
-#define INVERT_E0_DIR true // Creality with Bondtech extruder
+#define INVERT_E0_DIR false // Creality with Bondtech extruder - true appeared to go backwards
 #define INVERT_E1_DIR false
 #define INVERT_E2_DIR false
 #define INVERT_E3_DIR false
